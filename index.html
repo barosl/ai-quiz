@@ -1,0 +1,76 @@
+<!doctype html>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jspreadsheet-ce/dist/jspreadsheet.min.css" type="text/css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsuites/dist/jsuites.min.css" type="text/css" />
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jspreadsheet-ce/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsuites/dist/jsuites.min.js"></script>
+
+<style>
+#desc, #expr { font-size: 20px; margin-bottom: 20px; }
+</style>
+
+<h1>AI 만들기</h1>
+
+<div id="desc">국어×a + 수학×b</div>
+<div id="expr"></div>
+
+<div id="sheet"></div>
+<script>
+let exprA = 0;
+let exprB = 0;
+let exprC = 1000;
+
+const data = [
+    [null, null, null, null, null, null, exprA, exprB, exprC],
+    null,
+];
+const scores = [
+    [60, 30],
+    [40, 50],
+    [60, 40],
+    [90, 70],
+    [20, 70],
+    [30, 60],
+    [50, 40],
+    [70, 50],
+    [90, 90],
+];
+let row = 2;
+for (const score of scores) {
+    row++;
+    data.push([...score, `=IF(AND(A${row}>=60, B${row}>=40), "합격", "불합격")`, `=A${row}*$G$1 + B${row}*$H$1`, `=IF(A${row}*$G$1 + B${row}*$H$1 >= $I$1, "합격", "불합격")`]);
+}
+const columns = [
+    { type: 'text', title: '국어' },
+    { type: 'text', title: '수학' },
+    { type: 'text', title: '합격 여부', width: 100 },
+    { type: 'text', title: '국어×a + 수학×b', width: 150 },
+    { type: 'text', title: 'AI의 판단', width: 100 },
+    { type: 'text', title: ' ' },
+    { type: 'text', title: 'a', width: 70 },
+    { type: 'text', title: 'b', width: 70 },
+    { type: 'text', title: 'c', width: 70 },
+];
+function onchange(inst, cell, x, y, value) {
+    if (x === '6' && y === '0') {
+        exprA = parseInt(value);
+    } else if (x === '7' && y === '0') {
+        exprB = parseInt(value);
+    } else if (x === '8' && y === '0') {
+        exprC = parseInt(value);
+    }
+    updateExpr();
+}
+function updateExpr() {
+    document.querySelector('#expr').innerText = `국어×${exprA} + 수학×${exprB}`;
+}
+updateExpr();
+jspreadsheet(document.querySelector('#sheet'), {
+    data,
+    columns,
+    onchange,
+});
+</script>
